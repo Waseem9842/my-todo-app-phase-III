@@ -77,4 +77,4 @@ secrets/
 
 # Coverage
 coverage.xml
-coverage-final.json
+coverage-final.json.env
