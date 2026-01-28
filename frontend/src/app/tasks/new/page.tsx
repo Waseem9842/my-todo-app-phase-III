@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
-import { TaskCreate } from '@/types/task';
+import { TaskCreate, TaskUpdate } from '@/types/task';
 import { TaskForm } from '@/components/tasks/TaskForm';
 import { TaskService } from '@/services/task_service';
 
@@ -18,7 +18,7 @@ export default function CreateTaskPage() {
   const router = useRouter();
 
   // Handle creating a new task
-  const handleCreateTask = async (taskCreate: TaskCreate) => {
+  const handleCreateTask = async (taskData: TaskCreate | TaskUpdate) => {
     if (!user || !user.id) {
       setError('User not authenticated');
       return;
@@ -31,7 +31,14 @@ export default function CreateTaskPage() {
       // Convert user.id to number, handling both string and number formats
       const userId = typeof user.id === 'string' ? parseInt(user.id, 10) : user.id;
 
-      const newTask = await TaskService.createTask(userId, taskCreate);
+      // Ensure we have a TaskCreate object for creation
+      const taskCreateData: TaskCreate = {
+        title: (taskData as TaskCreate).title,
+        description: (taskData as TaskCreate).description,
+        completed: (taskData as TaskCreate).completed || false
+      };
+
+      const newTask = await TaskService.createTask(userId, taskCreateData);
 
       // Redirect to tasks page after successful creation
       router.push('/tasks');

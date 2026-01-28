@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
 import { apiClient } from '@/lib/api';
-import { Task } from '@/types/task';
+import { Task, TaskUpdate } from '@/types/task';
 import { TaskForm } from '@/components/tasks/TaskForm';
 
 export default function TaskDetailPage() {
@@ -45,7 +45,7 @@ export default function TaskDetailPage() {
   };
 
   // Handle updating the task
-  const handleUpdateTask = async (updatedTask: Task) => {
+  const handleUpdateTask = async (updatedTask: TaskUpdate) => {
     if (!user || !user.id || !task) return;
 
     try {
@@ -55,9 +55,9 @@ export default function TaskDetailPage() {
       const response = await apiClient.put<Task>(
         `/${parseInt(user.id)}/tasks/${task.id}`,
         {
-          title: updatedTask.title,
-          description: updatedTask.description,
-          completed: updatedTask.completed
+          title: updatedTask.title ?? task.title,
+          description: updatedTask.description ?? task.description,
+          completed: updatedTask.completed ?? task.completed
         }
       );
 
