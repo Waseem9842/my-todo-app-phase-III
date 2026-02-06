@@ -1,37 +1,40 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional
+from sqlmodel import SQLModel, Field
 from datetime import datetime
-from pydantic import BaseModel
+from typing import Optional
 
 
 class TaskBase(SQLModel):
     title: str = Field(min_length=1, max_length=255)
     description: Optional[str] = Field(default=None, max_length=1000)
-    completed: bool = Field(default=False)
+
+
+class TaskCreate(TaskBase):
+    """Request model for creating tasks"""
+    user_id: Optional[str] = Field(default=None, description="ID of the user who owns this task")
 
 
 class Task(TaskBase, table=True):
+    """
+    Todo Task model representing a user's task with properties like title,
+    description, completion status, and timestamps.
+    """
+    user_id: str = Field(default=None, description="ID of the user who owns this task")
     id: Optional[int] = Field(default=None, primary_key=True)
-    owner_id: int = Field(foreign_key="users.id")
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
-
-    # Relationship to user (if User model exists)
-    # user: Optional["User"] = Relationship(back_populates="tasks")
+    completed: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class TaskRead(TaskBase):
+    """Response model for reading tasks"""
     id: int
-    owner_id: int
+    user_id: str  # Include user_id in responses
+    completed: bool
     created_at: datetime
     updated_at: datetime
 
 
-class TaskUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    completed: Optional[bool] = None
-
-
-class TaskCreate(TaskBase):
-    pass  # Same as TaskBase for now
+class TaskUpdate(SQLModel):
+    """Request model for updating tasks"""
+    title: Optional[str] = Field(default=None, min_length=1, max_length=255)
+    description: Optional[str] = Field(default=None, max_length=1000)

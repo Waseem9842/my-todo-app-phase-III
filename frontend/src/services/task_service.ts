@@ -26,8 +26,8 @@ class TaskService {
    */
   static async getTasksByUser(userId: number): Promise<Task[]> {
     try {
-      const response = await apiClient.get<{tasks: Task[]}>(`/api/${userId}/tasks`);
-      return response.tasks || [];
+      const response = await apiClient.get<Task[]>(`/api/${userId}/tasks`);
+      return response || [];
     } catch (error) {
       console.error('Error getting tasks:', error);
       throw error;
@@ -65,7 +65,7 @@ class TaskService {
    */
   static async toggleTaskCompletion(userId: number, taskId: number, completed: boolean): Promise<Task> {
     try {
-      const response = await apiClient.patch<Task>(`/api/${userId}/tasks/${taskId}/complete`, { completed });
+      const response = await apiClient.patch<Task>(`/api/${userId}/tasks/${taskId}/complete?completed=${completed}`, {});
       return response;
     } catch (error) {
       console.error('Error toggling task completion:', error);

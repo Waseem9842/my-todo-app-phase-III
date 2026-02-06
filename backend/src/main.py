@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.task_router import task_router
 from src.api.auth_router import auth_router
+from src.api.health_endpoints import router as health_router
+from src.api.chat_endpoints import router as chat_router
 from src.database.database import create_db_and_tables
 from src.config.app_config import app_config
 import uvicorn
@@ -30,6 +32,12 @@ app.add_middleware(
 
 # Include the auth router first (without user_id in path)
 app.include_router(auth_router, prefix="/api", tags=["auth"])
+
+# Include the health router for system monitoring
+app.include_router(health_router, prefix="", tags=["health"])
+
+# Include the chat router (with user_id in path)
+app.include_router(chat_router, prefix="", tags=["chat"])
 
 # Include the task router (with user_id in path)
 app.include_router(task_router, prefix="/api/{user_id}", tags=["tasks"])

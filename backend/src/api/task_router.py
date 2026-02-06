@@ -27,7 +27,9 @@ def create_task(
         raise create_forbidden_exception("You can only create tasks for yourself")
 
     try:
-        task = TaskService.create_task(session, task_create, user_id)
+        # Update task_create to include the user_id from the path
+        task_create.user_id = str(user_id)
+        task = TaskService.create_task(task_create, session)
         return task
     except Exception as e:
         raise HTTPException(
@@ -51,7 +53,7 @@ def get_tasks(
         raise create_forbidden_exception("You can only access your own tasks")
 
     try:
-        tasks = TaskService.get_tasks_by_user(session, user_id)
+        tasks = TaskService.get_tasks_by_user(str(user_id), session)
         return tasks
     except Exception as e:
         raise HTTPException(
@@ -76,7 +78,7 @@ def get_task(
         raise create_forbidden_exception("You can only access your own tasks")
 
     try:
-        task = TaskService.get_task_by_id(session, task_id, user_id)
+        task = TaskService.get_task_by_id_and_user(task_id, str(user_id), session)
         if not task:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -109,7 +111,7 @@ def update_task(
         raise create_forbidden_exception("You can only update your own tasks")
 
     try:
-        updated_task = TaskService.update_task(session, task_id, user_id, task_update)
+        updated_task = TaskService.update_task(task_id, str(user_id), task_update, session)
         if not updated_task:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -142,7 +144,7 @@ def toggle_task_completion(
         raise create_forbidden_exception("You can only update your own tasks")
 
     try:
-        updated_task = TaskService.toggle_task_completion(session, task_id, user_id, completed)
+        updated_task = TaskService.toggle_task_completion(task_id, str(user_id), completed, session)
         if not updated_task:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -174,7 +176,7 @@ def delete_task(
         raise create_forbidden_exception("You can only delete your own tasks")
 
     try:
-        deleted = TaskService.delete_task(session, task_id, user_id)
+        deleted = TaskService.delete_task(task_id, str(user_id), session)
         if not deleted:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

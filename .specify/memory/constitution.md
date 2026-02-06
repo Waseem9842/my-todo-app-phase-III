@@ -1,42 +1,91 @@
-# Phase II – Todo Full-Stack Web Application Constitution
+<!-- SYNC IMPACT REPORT -->
+<!-- Version change: 3.0.0 → 4.0.0 -->
+<!-- Modified principles: Completely replaced old principles with new agentic/MCP-focused ones -->
+<!-- Added sections: MCP-First Tooling, AI Agent Discipline, Deterministic & Inspectable Behavior -->
+<!-- Removed sections: Old Phase II principles -->
+<!-- Templates requiring updates: ✅ Updated plan-template.md, spec-template.md, tasks-template.md -->
+<!-- Follow-up TODOs: None -->
+
+# AI-Powered Todo Application (Agentic, MCP-based) Constitution
 
 ## Core Principles
 
-### I. Spec-First, Agentic Workflow
-All development follows the Agentic Dev Stack workflow: Spec → Plan → Tasks → Implementation. No manual coding is allowed; all behavior must be defined in specifications before implementation begins.
+### I. Agentic Development Workflow
+Follow strict Agentic Dev Stack: Write spec → Generate plan → Break into tasks → Implement. No manual coding or architectural decisions outside specs. Each spec must have a single, clear responsibility.
 
-### II. Clear Separation of Frontend, Backend, and Authentication Concerns
-Maintain strict separation between frontend (Next.js), backend (FastAPI), and authentication layers (Better Auth + JWT). Each layer has clearly defined responsibilities and interfaces.
+### II. Stateless Architecture
+Backend APIs must remain stateless. Conversation, auth state, and task state must persist in the database. No in-memory session storage or global server state.
 
-### III. Security-by-Design with Strict User Isolation
-Implement security measures from the ground up: JWT-based stateless authentication, shared secrets via environment variables, token verification on every request, and ownership checks enforced on all task operations.
+### III. MCP-First Tooling
+All task mutations and reads MUST happen through MCP tools. AI agents are NOT allowed direct database access. MCP tools must be stateless and deterministic. Tools may read/write database but must not store memory internally.
 
-### IV. Clean, Maintainable, and Extensible Architecture
-Follow clean architecture principles with proper abstraction layers, dependency inversion, and single responsibility. Code must be readable, testable, and extendable for future enhancements.
+### IV. AI Agent Discipline
+AI agents must:
+- Use MCP tools for all task operations
+- Follow behavior rules defined in agent specs
+- Confirm user actions clearly and politely
+- Handle errors gracefully and transparently
+Agents must never hallucinate task state.
 
-### V. Production-Ready Practices with Minimal Over-Engineering
-Apply production-quality standards (testing, documentation, error handling) while avoiding unnecessary complexity. Focus on core functionality with clean extensibility points.
+### V. Clear Separation of Concerns
+- Frontend: UI only (no business logic)
+- Backend API: Routing, orchestration, persistence
+- Agent: Reasoning and tool selection
+- MCP Server: Tool execution only
+- Database: Source of truth
 
-### VI. RESTful API Conventions and Multi-User Data Isolation
+### VI. Authentication & Authorization
+Authentication must be enforced using Better Auth. All APIs, MCP tools, and agent actions must be scoped by `user_id`. No anonymous task access. Auth tokens must be validated server-side.
 
-All API endpoints follow REST conventions consistently. Each user may only access and modify their own data; no cross-user data access is permitted under any condition.
+### VII. Database as Source of Truth
+Neon PostgreSQL is the single source of truth. All conversation history, messages, and tasks must be persisted. Server restarts must not affect conversation continuity.
 
-## Technology Stack Requirements
-- Frontend: Next.js 16+ (App Router)
+### VIII. Deterministic & Inspectable Behavior
+Every agent action must be traceable:
+- User message
+- Tool calls
+- Tool results
+- Final response
+Tool calls must be included in API responses for observability.
+
+### IX. Technology Constraints (Hard Rules)
+- Frontend: OpenAI ChatKit
 - Backend: Python FastAPI
 - ORM: SQLModel
 - Database: Neon Serverless PostgreSQL
-- Authentication: Better Auth (Frontend) + JWT
-- Authorization: JWT verification in FastAPI
-- Runtime: Python 3.13+ using UV
-- Spec-driven: Claude Code + Spec-Kit Plus
+- AI Framework: OpenAI Agents SDK
+- MCP Server: Official MCP SDK
+- Authentication: Better Auth
+- No additional frameworks unless explicitly approved in a spec
 
-## Development Workflow
-All behavior must be defined in specs before implementation. Authentication is mandatory for all API access. Environment-based configuration for all secrets. Follow Agentic Dev Stack: Spec → Plan → Tasks → Implementation. Each specification must be independently reviewable.
+### X. Spec Quality Rules
+Every spec must define:
+- Objective
+- Scope (In / Out)
+- Success criteria
+- Constraints
+- Non-goals
+Specs must be implementation-ready and must not overlap responsibilities.
+
+## Non-Goals (Global)
+
+- No vendor comparisons
+- No ethical or philosophical AI discussions
+- No UI polish beyond functional UX
+- No manual state management
+- No hidden logic outside specs
+
+## Success Definition
+
+The project is successful when:
+- Users can manage todos via UI and natural language
+- AI agents reliably use MCP tools
+- Conversations resume correctly after restarts
+- System is modular, inspectable, and production-ready
+- All behavior is spec-driven and reproducible
 
 ## Governance
-This constitution governs all development activities for Phase II. All implementation must align with the spec-first, agentic workflow. Amendments require specification update and documented impact assessment. All changes must be traceable through the Agentic Dev Stack process.
 
-Specifications drive all feature development; implementation follows documented requirements. Success criteria include: 5 basic todo features working end-to-end, multi-user support with strict data isolation, secure auth flow, persistent storage in Neon PostgreSQL, and clean, readable code.
+This constitution is binding for all current and future specs. The project goal is to build a production-grade, multi-phase Todo application evolving from a traditional CRUD system into an AI-powered, agent-driven system using MCP (Model Context Protocol), OpenAI Agents SDK, and a stateless backend architecture. Amendments require explicit specification updates and must maintain the agentic development workflow.
 
-**Version**: 3.0.0 | **Ratified**: 2026-01-22 | **Last Amended**: 2026-01-22
+**Version**: 4.0.0 | **Ratified**: 2026-01-22 | **Last Amended**: 2026-01-28

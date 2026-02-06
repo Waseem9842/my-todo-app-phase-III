@@ -52,22 +52,78 @@ export async function authenticatedRequest<T>(
       throw new Error('Forbidden: Access denied');
     }
 
-    // Try to parse response as JSON
-    const contentType = response.headers.get('content-type');
+    // Try to parse response based on status and content type
     let data;
 
-    if (contentType && contentType.includes('application/json')) {
-      data = await response.json();
+    // Handle different response statuses appropriately
+    if (response.status === 204) {
+      // For 204 No Content responses (like successful DELETE)
+      return undefined as any;
     } else {
-      // For non-JSON responses (like DELETE with 204 status)
-      if (response.status === 204) {
-        return undefined as any; // Return undefined for 204 responses
+      const contentType = response.headers.get('content-type');
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // For non-JSON responses
+        data = await response.text();
       }
-      data = await response.text();
     }
 
     if (!response.ok) {
-      throw new Error(data?.detail || `HTTP error! status: ${response.status}`);
+      // Handle error responses - data might be an object, array, or string
+      let errorMessage = `HTTP error! status: ${response.status}`;
+
+      if (Array.isArray(data)) {
+        // Handle validation errors array like [{"type":"missing","loc":["query","completed"],"msg":"Field required","input":null}]
+        const validationErrors = data.map(error => {
+          if (typeof error === 'object' && error !== null && 'msg' in error) {
+            return error.msg;
+          }
+          return JSON.stringify(error);
+        }).join('; ');
+
+        errorMessage = validationErrors;
+      } else if (typeof data === 'object' && data !== null) {
+        // If data is an object, try to extract the detail property
+        if ('detail' in data) {
+          // The detail might be a string or an object/array
+          if (typeof data.detail === 'string') {
+            errorMessage = data.detail;
+          } else if (Array.isArray(data.detail)) {
+            // If detail is an array (like validation errors), extract messages
+            const detailErrors = data.detail.map((err: any) => {
+              if (typeof err === 'object' && err !== null && 'msg' in err) {
+                return err.msg;
+              }
+              return JSON.stringify(err);
+            }).join('; ');
+
+            errorMessage = detailErrors;
+          } else if (typeof data.detail === 'object') {
+            // If detail is an object, try to extract message if available
+            if ('msg' in data.detail) {
+              errorMessage = data.detail.msg;
+            } else {
+              errorMessage = JSON.stringify(data.detail);
+            }
+          } else {
+            // For other types, convert to string
+            errorMessage = String(data.detail);
+          }
+        } else {
+          // If no detail property, try to stringify the entire object
+          errorMessage = JSON.stringify(data);
+        }
+      } else if (typeof data === 'string' && data) {
+        // If data is a string, use it as the error message
+        errorMessage = data;
+      } else if (response.statusText) {
+        // If there's a status text, use that
+        errorMessage = response.statusText;
+      }
+
+      throw new Error(errorMessage);
     }
 
     return data;

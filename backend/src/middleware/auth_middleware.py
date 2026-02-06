@@ -29,7 +29,7 @@ class AuthMiddleware:
             return
 
         # Extract the authorization header
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get("authorization")
         if not auth_header or not auth_header.startswith("Bearer "):
             response = JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -44,10 +44,11 @@ class AuthMiddleware:
             await response(scope, receive, send)
             return
 
-        token = auth_header[len("Bearer "):]
+        token = auth_header.split(" ", 1)[1]  # Extract token after "Bearer "
 
         try:
-            # Validate the token
+            # Validate the token using the JWTHandler from auth module
+            from src.auth.jwt_handler import JWTHandler
             payload = JWTHandler.validate_token_claims(token)
 
             # Add user info to request state for use in route handlers

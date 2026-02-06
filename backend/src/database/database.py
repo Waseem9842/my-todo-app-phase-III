@@ -15,8 +15,21 @@ load_dotenv()
 # Database URL - should come from environment variables in production
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
-# Create the engine
-engine = create_engine(DATABASE_URL, echo=True)
+# Create the engine with proper connection pooling for Neon
+from sqlalchemy.pool import QueuePool
+
+engine = create_engine(
+    DATABASE_URL,
+    echo=True,
+    poolclass=QueuePool,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,  # Verify connections before use
+    pool_recycle=300,    # Recycle connections every 5 minutes
+    connect_args={
+        "connect_timeout": 10
+    }
+)
 
 
 def create_db_and_tables():

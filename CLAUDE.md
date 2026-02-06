@@ -216,6 +216,10 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 - N/A (stateless authentication) (002-auth-security)
 - TypeScript 5.0+ (with JavaScript support) + Next.js 16+, React 19+, Better Auth, Tailwind CSS, SWR or React Query (003-frontend-web-app)
 - Browser local storage (for JWT tokens), HTTP cookies (via Better Auth) (003-frontend-web-app)
+- Python 3.13+ (as per constitution and existing backend) + FastAPI, SQLModel, Official MCP SDK, Neon PostgreSQL driver (004-mcp-todo-server)
+- Neon Serverless PostgreSQL (as per constitution) (004-mcp-todo-server)
+- Python 3.13+ (as per constitution and existing backend) + FastAPI, OpenAI Agents SDK, Official MCP SDK, SQLModel, Neon PostgreSQL driver, Better Auth (005-ai-chat-api)
+- Python 3.13+ (as per constitution and existing backend) + SQLModel, Alembic, Neon PostgreSQL driver, Pydantic, FastAPI (007-db-persistence)
 
 ## Recent Changes
 - 001-backend-api-data-layer: Added Python 3.13+ + FastAPI, SQLModel, Pydantic, uvicorn

@@ -13,6 +13,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "better-auth": "^0.8.0",
+    "@chatscope/chat-ui-kit-react": "^2.0.3",
     "swr": "^2.2.5",
     "zustand": "^4.5.0",
     "jwt-decode": "^4.0.0",

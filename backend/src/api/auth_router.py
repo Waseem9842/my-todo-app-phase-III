@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from typing import Dict, Any
 import os
+from datetime import datetime
 from src.auth.jwt_handler import JWTHandler
 from src.models.user_model import User, UserCreate, UserPublic
 from src.database.database import get_session
 from sqlmodel import Session
 from src.services.user_service import UserService
 from src.auth.auth_dependencies import get_current_user
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # Create the API router
 auth_router = APIRouter()
@@ -18,7 +19,27 @@ class LoginData(BaseModel):
     email: str
     password: str
 
-@auth_router.post("/auth/register", response_model=UserPublic)
+
+class UserWithToken(BaseModel):
+    """Response model that includes both user data and authentication token"""
+    id: int
+    email: str
+    name: str
+    created_at: datetime
+    updated_at: datetime
+    token: str
+
+
+class LoginResponse(BaseModel):
+    """Response model for login endpoint"""
+    id: int
+    email: str
+    name: str
+    created_at: datetime
+    updated_at: datetime
+    token: str
+
+@auth_router.post("/auth/register", response_model=UserWithToken)
 def register_user(user_create: UserCreate, session: Session = Depends(get_session)):
     """
     Register a new user and return a JWT token.
@@ -36,7 +57,6 @@ def register_user(user_create: UserCreate, session: Session = Depends(get_sessio
         user = UserService.create_user(session, user_create)
 
         # Create JWT token
-        import datetime
         from datetime import timezone
 
         token_data = {
@@ -44,16 +64,20 @@ def register_user(user_create: UserCreate, session: Session = Depends(get_sessio
             "email": user.email,
             "aud": "todo-api",
             "iss": "better-auth",
-            "iat": int(datetime.datetime.now(timezone.utc).timestamp()),
-            "nbf": int(datetime.datetime.now(timezone.utc).timestamp())
+            "iat": int(datetime.now(timezone.utc).timestamp()),
+            "nbf": int(datetime.now(timezone.utc).timestamp())
         }
         access_token = JWTHandler.create_access_token(data=token_data)
 
-        # Return user data with token
-        user_dict = user.model_dump()
-        user_dict["token"] = access_token
-
-        return user_dict
+        # Return user data with token using the proper response model
+        return UserWithToken(
+            id=user.id,
+            email=user.email,
+            name=user.name,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+            token=access_token
+        )
     except HTTPException:
         raise
     except ValueError as ve:
@@ -75,7 +99,7 @@ def register_user(user_create: UserCreate, session: Session = Depends(get_sessio
         )
 
 
-@auth_router.post("/auth/login")
+@auth_router.post("/auth/login", response_model=LoginResponse)
 def login_user(login_data: LoginData, session: Session = Depends(get_session)):
     """
     Authenticate user and return a JWT token.
@@ -94,7 +118,6 @@ def login_user(login_data: LoginData, session: Session = Depends(get_session)):
             )
 
         # Create JWT token
-        import datetime
         from datetime import timezone
 
         token_data = {
@@ -102,16 +125,20 @@ def login_user(login_data: LoginData, session: Session = Depends(get_session)):
             "email": user.email,
             "aud": "todo-api",
             "iss": "better-auth",
-            "iat": int(datetime.datetime.now(timezone.utc).timestamp()),
-            "nbf": int(datetime.datetime.now(timezone.utc).timestamp())
+            "iat": int(datetime.now(timezone.utc).timestamp()),
+            "nbf": int(datetime.now(timezone.utc).timestamp())
         }
         access_token = JWTHandler.create_access_token(data=token_data)
 
-        # Return user data with token
-        user_dict = user.model_dump()
-        user_dict["token"] = access_token
-
-        return user_dict
+        # Return user data with token using the proper response model
+        return LoginResponse(
+            id=user.id,
+            email=user.email,
+            name=user.name,
+            created_at=user.created_at,
+            updated_at=user.updated_at,
+            token=access_token
+        )
     except HTTPException:
         raise
     except ValueError as ve:

@@ -4,12 +4,14 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { storeToken, getToken, removeToken, getUserIdFromToken, isAuthenticated } from '@/lib/auth';
+import { storeToken, getToken, removeToken, getUserIdFromToken, isAuthenticated, decodeToken } from '@/lib/auth';
 
 // Define the authentication context type
 interface AuthContextType {
   user: {
     id: string | null;
+    email: string | null;
+    name: string | null;
     isAuthenticated: boolean;
   } | null;
   login: (token: string) => void;
@@ -29,6 +31,8 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<{
     id: string | null;
+    email: string | null;
+    name: string | null;
     isAuthenticated: boolean;
   } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,14 +42,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const checkAuth = async () => {
       try {
         if (isAuthenticated()) {
-          const userId = getUserIdFromToken();
+          const token = getToken();
+          const decodedToken = decodeToken(token);
+
           setUser({
-            id: userId,
+            id: decodedToken?.sub || decodedToken?.user_id || decodedToken?.id || null,
+            email: decodedToken?.email || null,
+            name: decodedToken?.name || decodedToken?.user_name || null,
             isAuthenticated: true
           });
         } else {
           setUser({
             id: null,
+            email: null,
+            name: null,
             isAuthenticated: false
           });
         }
@@ -53,6 +63,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('Error checking authentication status:', error);
         setUser({
           id: null,
+          email: null,
+          name: null,
           isAuthenticated: false
         });
       } finally {
@@ -68,10 +80,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Store the token
     storeToken(token);
 
-    // Update user state
-    const userId = getUserIdFromToken();
+    // Update user state with details from token
+    const decodedToken = decodeToken(token);
+
     setUser({
-      id: userId,
+      id: decodedToken?.sub || decodedToken?.user_id || decodedToken?.id || null,
+      email: decodedToken?.email || null,
+      name: decodedToken?.name || decodedToken?.user_name || null,
       isAuthenticated: true
     });
   };
@@ -84,6 +99,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Update user state
     setUser({
       id: null,
+      email: null,
+      name: null,
       isAuthenticated: false
     });
   };
