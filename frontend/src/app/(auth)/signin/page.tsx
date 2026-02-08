@@ -28,6 +28,13 @@ export default function SigninPage() {
     setLoading(true);
     setError(null);
 
+    // Additional client-side validation
+    if (password.length > 72) {
+      setError('Password cannot be longer than 72 characters. Please use a shorter password.');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Call the manual sign-in API
       const result = await manualSignIn(email, password);
@@ -42,7 +49,14 @@ export default function SigninPage() {
         setError('Login successful but no token received');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during signin');
+      let errorMessage = err instanceof Error ? err.message : 'An error occurred during signin';
+      
+      // Provide more specific error message for password length
+      if (errorMessage.includes('Password cannot be longer than 72 characters')) {
+        errorMessage = 'Password cannot be longer than 72 characters. Please use a shorter password.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -84,7 +98,11 @@ export default function SigninPage() {
               required
               minLength={6}
               maxLength={72}
+              placeholder="Enter your password (max 72 chars)"
             />
+            <p className="text-xs text-gray-500">
+              Password must be at most 72 characters
+            </p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col">

@@ -29,6 +29,13 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
+    // Additional client-side validation
+    if (password.length > 72) {
+      setError('Password cannot be longer than 72 characters. Please use a shorter password.');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Call the manual sign-up API
       const result = await manualSignUp(email, password, name);
@@ -43,7 +50,14 @@ export default function SignupPage() {
         setError('Signup successful but no token received');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during signup');
+      let errorMessage = err instanceof Error ? err.message : 'An error occurred during signup';
+      
+      // Provide more specific error message for password length
+      if (errorMessage.includes('Password cannot be longer than 72 characters')) {
+        errorMessage = 'Password cannot be longer than 72 characters. Please use a shorter password.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -96,8 +110,11 @@ export default function SignupPage() {
               required
               minLength={6}
               maxLength={72}
-              placeholder="Password must be at most 72 characters"
+              placeholder="Enter your password (max 72 chars)"
             />
+            <p className="text-xs text-gray-500">
+              Password must be between 6 and 72 characters
+            </p>
             {password.length > 66 && (
               <p className="text-xs text-yellow-600">
                 Password approaching maximum length (72 characters)
