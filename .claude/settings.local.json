@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source venv/bin/activate)",
+      "Bash(python -c \"\ntry:\n    from src.main import app\n    print\\(''Successfully imported app''\\)\nexcept Exception as e:\n    print\\(f''Import error: {e}''\\)\n    import traceback\n    traceback.print_exc\\(\\)\n\")",
+      "Bash(npm install)",
+      "Bash(curl -s -o /dev/null -w \"Signin Page Status: %{http_code}\\\\n\" \"http://localhost:3000/api/auth/signin\")",
+      "Bash(curl -v -X POST \"http://localhost:8000/api/4/tasks\" -H \"Authorization: Bearer $NEW_TOKEN\" -H \"Content-Type: application/json\" -d '{\"\"title\"\":\"\"Test task\"\", \"\"description\"\":\"\"Test description\"\", \"\"completed\"\":false}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/health)",
+      "Bash(curl -X POST http://localhost:8000/api/1/tasks -H \"Content-Type: application/json\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiYXVkIjoidG9kby1hcGkiLCJpc3MiOiJiZXR0ZXItYXV0aCIsImlhdCI6MTc3MDAxODc0MCwibmJmIjoxNzcwMDE4NzQwLCJleHAiOjE3NzAwMjA1NDB9.WYcQLAxTiyql3IFAks2Zn_IZBolWURmgAFUrqz4yp-M\" -d '{\"\"title\"\":\"\"Test Task\"\",\"\"description\"\":\"\"This is a test task\"\"}')",
+      "Bash(curl -X POST http://localhost:8000/api/auth/login -H \"Content-Type: application/json\" -d '{\"\"email\"\":\"\"test@example.com\"\",\"\"password\"\":\"\"password123\"\"}')",
+      "Bash(curl -X POST http://localhost:8000/api/1/tasks -H \"Content-Type: application/json\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiYXVkIjoidG9kby1hcGkiLCJpc3MiOiJiZXR0ZXItYXV0aCIsImlhdCI6MTc3MDAyOTYyNywibmJmIjoxNzcwMDI5NjI3LCJleHAiOjE3NzAwMzE0Mjd9.rVasPeJ320SyuttV5h9hrUbB-aCFCncX3-dShUy3lVU\" -d '{\"\"title\"\":\"\"Test Task\"\",\"\"description\"\":\"\"This is a test task\"\"}')",
+      "Bash(curl -X POST http://localhost:8000/api/1/tasks -H \"Content-Type: application/json\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiYXVkIjoidG9kby1hcGkiLCJpc3MiOiJiZXR0ZXItYXV0aCIsImlhdCI6MTc3MDAzMDQ5NywibmJmIjoxNzcwMDMwNDk3LCJleHAiOjE3NzAwMzIyOTd9.tri5AOMb2ullQOhOiAL23vK4XBKs-wWpzQ1PB695sT8\" -d '{\"\"title\"\":\"\"Test Task\"\",\"\"description\"\":\"\"This is a test task\"\"}')",
+      "Bash(curl -X GET http://localhost:8000/api/1/tasks -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiYXVkIjoidG9kby1hcGkiLCJpc3MiOiJiZXR0ZXItYXV0aCIsImlhdCI6MTc3MDAzMDQ5NywibmJmIjoxNzcwMDMwNDk3LCJleHAiOjE3NzAwMzIyOTd9.tri5AOMb2ullQOhOiAL23vK4XBKs-wWpzQ1PB695sT8\")",
+      "Bash(curl -X POST http://localhost:8000/api/auth/login -H \"Content-Type: application/json\" -d '{\"\"email\"\":\"\"newuser@example.com\"\", \"\"password\"\":\"\"testpass123\"\"}')",
+      "Bash(npm run build)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/chat:*)"
+    ]
+  }
+}
