@@ -29,15 +29,17 @@ class AuthService:
             HTTPException: If token is invalid, expired, or fails validation
         """
         try:
-            # Get secret key from environment
-            secret_key = os.getenv("BETTER_AUTH_SECRET")
+            from src.config.auth_config import auth_config
+            
+            # Get secret key from auth config
+            secret_key = auth_config.auth_secret
             if not secret_key or secret_key == "your-super-secret-key-change-in-production":
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Authentication configuration error: Missing or invalid secret key",
                 )
 
-            algorithm = os.getenv("AUTH_ALGORITHM", "HS256")
+            algorithm = auth_config.auth_algorithm
 
             # Decode the token
             payload = jwt.decode(token, secret_key, algorithms=[algorithm])
@@ -66,7 +68,7 @@ class AuthService:
 
             # Check if audience matches expected value
             aud = payload.get("aud")
-            expected_aud = os.getenv("AUTH_AUDIENCE", "todo-api")
+            expected_aud = auth_config.auth_audience
             if aud and expected_aud != aud:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -75,7 +77,7 @@ class AuthService:
 
             # Check if issuer matches expected value
             iss = payload.get("iss")
-            expected_iss = os.getenv("AUTH_ISSUER", "better-auth")
+            expected_iss = auth_config.auth_issuer
             if iss and expected_iss != iss:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -205,6 +207,8 @@ class AuthService:
         Returns:
             Dictionary with validation results and messages
         """
+        from src.config.auth_config import auth_config
+
         results = {
             "auth_secret_configured": False,
             "auth_algorithm_valid": False,
@@ -212,10 +216,10 @@ class AuthService:
             "auth_issuer_set": False
         }
 
-        better_auth_secret = os.getenv("BETTER_AUTH_SECRET")
-        auth_algorithm = os.getenv("AUTH_ALGORITHM", "HS256")
-        auth_audience = os.getenv("AUTH_AUDIENCE", "todo-api")
-        auth_issuer = os.getenv("AUTH_ISSUER", "better-auth")
+        better_auth_secret = auth_config.auth_secret
+        auth_algorithm = auth_config.auth_algorithm
+        auth_audience = auth_config.auth_audience
+        auth_issuer = auth_config.auth_issuer
 
         # Validate auth secret is properly set (not default placeholder)
         if better_auth_secret and better_auth_secret != "your-super-secret-key-here" and better_auth_secret != "your-super-secret-key-change-in-production" and len(better_auth_secret) >= 32:
@@ -290,6 +294,8 @@ class AuthService:
         Returns:
             Dictionary with validation results and messages
         """
+        from src.config.auth_config import auth_config
+        
         results = {
             "BETTER_AUTH_SECRET": False,
             "AUTH_ALGORITHM": False,
@@ -297,13 +303,15 @@ class AuthService:
             "AUTH_ISSUER": False
         }
 
-        # Check each required environment variable
-        for var_name in results.keys():
-            var_value = os.getenv(var_name)
-            if var_value and var_value != "your-super-secret-key-here" and var_value.strip() != "":
-                results[var_name] = True
-            else:
-                results[var_name] = False
+        # Check each required environment variable using auth config
+        if auth_config.auth_secret and auth_config.auth_secret != "your-super-secret-key-here" and auth_config.auth_secret.strip() != "":
+            results["BETTER_AUTH_SECRET"] = True
+        if auth_config.auth_algorithm and auth_config.auth_algorithm.strip() != "":
+            results["AUTH_ALGORITHM"] = True
+        if auth_config.auth_audience and auth_config.auth_audience.strip() != "":
+            results["AUTH_AUDIENCE"] = True
+        if auth_config.auth_issuer and auth_config.auth_issuer.strip() != "":
+            results["AUTH_ISSUER"] = True
 
         # Overall validation status
         all_valid = all(results.values())

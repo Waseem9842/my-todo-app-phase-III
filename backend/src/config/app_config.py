@@ -10,7 +10,7 @@ class AppConfig(BaseSettings):
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./todo_app.db")
 
     # Authentication settings
-    better_auth_secret: str = os.getenv("BETTER_AUTH_SECRET", "")
+    better_auth_secret: str = os.getenv("AUTH_SECRET", "")  # Using same variable as auth_config
     auth_algorithm: str = os.getenv("AUTH_ALGORITHM", "HS256")
     auth_audience: str = os.getenv("AUTH_AUDIENCE", "todo-api")
     auth_issuer: str = os.getenv("AUTH_ISSUER", "better-auth")

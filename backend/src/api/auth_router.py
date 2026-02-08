@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from typing import Dict, Any
 import os
+import logging
 from datetime import datetime
 from src.auth.jwt_handler import JWTHandler
 from src.models.user_model import User, UserCreate, UserPublic
@@ -10,6 +11,9 @@ from sqlmodel import Session
 from src.services.user_service import UserService
 from src.auth.auth_dependencies import get_current_user
 from pydantic import BaseModel, Field
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # Create the API router
 auth_router = APIRouter()
@@ -82,7 +86,8 @@ def register_user(user_create: UserCreate, session: Session = Depends(get_sessio
         raise
     except ValueError as ve:
         # Specifically catch bcrypt-related value errors
-        if "cannot be longer than 72 bytes" in str(ve):
+        error_msg = str(ve).lower()
+        if "cannot be longer than 72 bytes" in error_msg or "password" in error_msg and "72" in error_msg:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Password cannot be longer than 72 characters. Please use a shorter password."
@@ -92,7 +97,16 @@ def register_user(user_create: UserCreate, session: Session = Depends(get_sessio
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Registration failed: {str(ve)}"
             )
+    except ImportError as ie:
+        # Handle bcrypt import/library issues
+        logger.error(f"Bcrypt library error during registration: {str(ie)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Authentication library error. Please contact administrator."
+        )
     except Exception as e:
+        # Log the full error for debugging
+        logger.error(f"Unexpected error during registration: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Registration failed: {str(e)}"
@@ -143,7 +157,8 @@ def login_user(login_data: LoginData, session: Session = Depends(get_session)):
         raise
     except ValueError as ve:
         # Specifically catch bcrypt-related value errors
-        if "cannot be longer than 72 bytes" in str(ve):
+        error_msg = str(ve).lower()
+        if "cannot be longer than 72 bytes" in error_msg or "password" in error_msg and "72" in error_msg:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Password cannot be longer than 72 characters. Please use a shorter password."
@@ -153,7 +168,16 @@ def login_user(login_data: LoginData, session: Session = Depends(get_session)):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Login failed: {str(ve)}"
             )
+    except ImportError as ie:
+        # Handle bcrypt import/library issues
+        logger.error(f"Bcrypt library error during login: {str(ie)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Authentication library error. Please contact administrator."
+        )
     except Exception as e:
+        # Log the full error for debugging
+        logger.error(f"Unexpected error during login: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Login failed: {str(e)}"
