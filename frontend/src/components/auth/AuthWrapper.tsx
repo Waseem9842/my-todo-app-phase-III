@@ -26,12 +26,12 @@ export const AuthWrapper: React.FC<AuthWrapperProps> = ({
 
         if (!authStatus) {
           // Redirect to login if not authenticated
-          router.push(redirectPath);
+          router.push(redirectPath as any);
         }
       } catch (error) {
         console.error('Error checking authentication status:', error);
         setIsAuthenticated(false);
-        router.push(redirectPath);
+        router.push(redirectPath as any);
       } finally {
         setIsLoading(false);
       }
