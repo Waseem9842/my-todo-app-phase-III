@@ -22,11 +22,13 @@ class UserService:
         """Create a new user with hashed password."""
         # Truncate password to 72 characters to comply with bcrypt limitations
         password = user_create.password
-        if len(password) > 72:  # First check the character length
-            password = password[:72]
-        elif len(password.encode('utf-8')) > 72:  # Then check the byte length for multi-byte chars
+        
+        # First check the byte length since bcrypt has a 72-byte limit
+        if len(password.encode('utf-8')) > 72:
             # Truncate to 72 bytes while preserving multi-byte character integrity
             password = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+        elif len(password) > 72:  # Then check the character length
+            password = password[:72]
 
         # Hash the password
         hashed_password = pwd_context.hash(password)
@@ -54,11 +56,13 @@ class UserService:
 
         # Truncate password to 72 characters to comply with bcrypt limitations
         truncated_password = password
-        if len(password) > 72:  # First check the character length
-            truncated_password = password[:72]
-        elif len(password.encode('utf-8')) > 72:  # Then check the byte length for multi-byte chars
+        
+        # First check the byte length since bcrypt has a 72-byte limit
+        if len(password.encode('utf-8')) > 72:
             # Truncate to 72 bytes while preserving multi-byte character integrity
             truncated_password = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
+        elif len(password) > 72:  # Then check the character length
+            truncated_password = password[:72]
 
         # Verify password
         if not pwd_context.verify(truncated_password, user.hashed_password):
