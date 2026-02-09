@@ -26,39 +26,116 @@ body {
 
 /* Responsive utilities for task list */
 .task-list-container {
-  @apply w-full;
+  width: 100%;
 }
 
 @media (min-width: 640px) {
   .task-list-container {
-    @apply px-4;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
 @media (min-width: 768px) {
   .task-list-container {
-    @apply max-w-2xl mx-auto;
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 @media (min-width: 1024px) {
   .task-list-container {
-    @apply max-w-4xl mx-auto;
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 /* Mobile-friendly touch targets */
 .btn-touch-large {
-  @apply md:min-h-[44px] md:min-w-[44px];
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (min-width: 768px) {
+  .btn-touch-large {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }
 
 /* Responsive form elements */
 .form-field-responsive {
-  @apply w-full;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
   .form-field-responsive {
-    @apply w-2/3;
+    width: 66.666667%;
   }
+}
+
+/* Additional utility classes to prevent purging */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus\:sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.pointer-events-auto {
+  pointer-events: auto;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.collapse {
+  visibility: collapse;
+}
+
+.static {
+  position: static;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.sticky {
+  position: sticky;
+}
+
+.visible {
+  visibility: visible;
 }
