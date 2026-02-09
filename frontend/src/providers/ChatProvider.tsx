@@ -31,11 +31,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Initialize conversation from localStorage or start new one
   useEffect(() => {
-    const savedConversationId = localStorage.getItem('currentConversationId');
-    if (savedConversationId) {
-      initializeConversation(savedConversationId);
-    } else {
-      initializeConversation();
+    // Check if we're in the browser before accessing localStorage
+    if (typeof window !== 'undefined') {
+      const savedConversationId = localStorage.getItem('currentConversationId');
+      if (savedConversationId) {
+        initializeConversation(savedConversationId);
+      } else {
+        initializeConversation();
+      }
     }
   }, []);
 
@@ -99,7 +102,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     const newId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     setConversationId(newId);
     setMessages([]);
-    localStorage.setItem('currentConversationId', newId);
+    
+    // Only set localStorage in browser environment
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('currentConversationId', newId);
+    }
   };
 
   const sendMessage = async (content: string) => {
@@ -178,7 +185,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     const newId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     setConversationId(newId);
     setMessages([]);
-    localStorage.setItem('currentConversationId', newId);
+    
+    // Only set localStorage in browser environment
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('currentConversationId', newId);
+    }
   };
 
   const value = {

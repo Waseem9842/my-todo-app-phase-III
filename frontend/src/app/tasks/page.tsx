@@ -104,28 +104,48 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto p-4 md:p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Tasks</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Manage your todo items
-        </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+              My Tasks
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Manage your todo items efficiently
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <div className="bg-indigo-50 px-4 py-2 rounded-lg flex items-center">
+              <span className="text-sm font-medium text-indigo-700">
+                Total: {tasks.length} tasks
+              </span>
+            </div>
+            <div className="bg-green-50 px-4 py-2 rounded-lg flex items-center">
+              <span className="text-sm font-medium text-green-700">
+                Completed: {tasks.filter(t => t.completed).length}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg mb-6" role="alert">
           <span className="block sm:inline">{error}</span>
         </div>
       )}
 
-      <TaskList
-        tasks={tasks}
-        loading={loading}
-        error={error}
-        onTaskUpdate={handleUpdateTask}
-        onTaskDelete={handleDeleteTask}
-        onTaskToggleCompletion={handleToggleTaskCompletion}
-      />
+      <div className="bg-white rounded-2xl border-0 shadow-lg overflow-hidden">
+        <TaskList
+          tasks={tasks}
+          loading={loading}
+          error={error}
+          onTaskUpdate={handleUpdateTask}
+          onTaskDelete={handleDeleteTask}
+          onTaskToggleCompletion={handleToggleTaskCompletion}
+        />
+      </div>
     </div>
   );
 }

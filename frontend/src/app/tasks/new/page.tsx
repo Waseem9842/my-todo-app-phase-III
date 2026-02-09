@@ -57,26 +57,39 @@ export default function CreateTaskPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto p-4 md:p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create New Task</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Add a new task to your todo list
-        </p>
+        <div className="flex items-center">
+          <div className="mr-4 p-3 rounded-xl bg-indigo-100">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+              Create New Task
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Add a new task to your todo list
+            </p>
+          </div>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg mb-6" role="alert">
           <span className="block sm:inline">{error}</span>
         </div>
       )}
 
-      <TaskForm
-        onSubmit={handleCreateTask}
-        onCancel={handleCancel}
-        loading={loading}
-        error={error}
-      />
+      <div className="bg-white rounded-2xl border-0 shadow-lg p-6">
+        <TaskForm
+          onSubmit={handleCreateTask}
+          onCancel={handleCancel}
+          loading={loading}
+          error={error}
+        />
+      </div>
     </div>
   );
 }
